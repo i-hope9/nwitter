@@ -5,6 +5,7 @@ import Nweet from "../components/Nweet";
 const Home = ({userObj}) => {
     const [nweet, setNweet] = useState("");
     const [nweets, setNweets] = useState([]);
+    const [attachment, setAttachment] = useState();
     // snapshot 이용한 realtime 코드 작성 전
     // const getNweets = async () => {
     //     const dbNweets = await dbService.collection("nweets").get();
@@ -29,12 +30,12 @@ const Home = ({userObj}) => {
     }, []);
     const onSubmit = async (event) => {
         event.preventDefault();
-        await dbService.collection("nweets").add({
-            text: nweet,
-            createdAt: Date.now(),
-            creatorId: userObj.uid
-        });
-        setNweet("");
+        // await dbService.collection("nweets").add({
+        //     text: nweet,
+        //     createdAt: Date.now(),
+        //     creatorId: userObj.uid
+        // });
+        // setNweet("");
     };
     const onFileChange = (event) => {
         const {
@@ -43,10 +44,14 @@ const Home = ({userObj}) => {
         const theFile = files[0];
         const reader = new FileReader();
         reader.onloadend = (finishedEvent) => {
-            console.log(finishedEvent);
-        };
+            const {
+                currentTarget: {result},
+            } = finishedEvent;
+            setAttachment(result);
+        }
         reader.readAsDataURL(theFile);
     };
+    const onClearAttachmentClick = () => setAttachment(null);
     const onChange = (event) => {
         const {
             target: {value},
@@ -58,8 +63,14 @@ const Home = ({userObj}) => {
             <form onSubmit={onSubmit}>
                 <input value={nweet} onChange={onChange} type="text" placeholder="What's on your mind?"
                        maxLength={120}/>
-                <input type="file" accept="image/*" onChange={onFileChange} />
+                <input type="file" accept="image/*" onChange={onFileChange}/>
                 <input type="submit" value="Nweet"/>
+                {attachment && (
+                    <div>
+                        <img src={attachment} width="50px" height="50px" alt="attached image"/>
+                        <button onClick={onClearAttachmentClick}>Cancel upload</button>
+                    </div>
+                )}
             </form>
             <div>
                 {nweets.map(nweet =>
