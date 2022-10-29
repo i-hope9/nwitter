@@ -21,3 +21,4 @@ export const firebaseInstance = firebase;
 
 export const authService = firebase.auth();     // https://firebase.google.com/docs/reference/js/v8/firebase.auth
 export const dbService = firebase.firestore();
+export const storageService = firebase.storage();

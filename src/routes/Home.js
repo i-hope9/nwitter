@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react"
-import {dbService} from "../fbase";
+import {dbService, storageService} from "../fbase";
 import Nweet from "../components/Nweet";
+import {v4 as uuidv4} from "uuid";
 
 const Home = ({userObj}) => {
     const [nweet, setNweet] = useState("");
@@ -30,12 +31,22 @@ const Home = ({userObj}) => {
     }, []);
     const onSubmit = async (event) => {
         event.preventDefault();
-        // await dbService.collection("nweets").add({
-        //     text: nweet,
-        //     createdAt: Date.now(),
-        //     creatorId: userObj.uid
-        // });
-        // setNweet("");
+        let attachmentUrl = "";
+        // 1. 사진이 있으면 사진을 먼저 버킷에 넣는다.
+        if (attachment !== "") {
+            const attachmentRef = storageService.ref().child(`${userObj.uid}/${uuidv4()}`);
+            const response = await attachmentRef.putString(attachment, "data_url");
+            attachmentUrl = await response.ref.getDownloadURL();
+        }
+        // 2. 사진의 url 정보를 nweet 문서에 넣는다.
+        await dbService.collection("nweets").add({
+            text: nweet,
+            createdAt: Date.now(),
+            creatorId: userObj.uid,
+            attachmentUrl
+        });
+        setNweet("");
+        setAttachment("");
     };
     const onFileChange = (event) => {
         const {
