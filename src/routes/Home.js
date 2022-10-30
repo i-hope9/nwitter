@@ -6,7 +6,7 @@ import {v4 as uuidv4} from "uuid";
 const Home = ({userObj}) => {
     const [nweet, setNweet] = useState("");
     const [nweets, setNweets] = useState([]);
-    const [attachment, setAttachment] = useState();
+    const [attachment, setAttachment] = useState("");
     // snapshot 이용한 realtime 코드 작성 전
     // const getNweets = async () => {
     //     const dbNweets = await dbService.collection("nweets").get();
